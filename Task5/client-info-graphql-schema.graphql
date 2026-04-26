@@ -1,0 +1,583 @@
+"""
+GraphQL схема сервиса client-info
+Миграция REST API на GraphQL для оптимизации запросов клиентских данных
+
+Исходный REST контракт:
+  GET /clients/{id}           — получить клиента
+  GET /clients/{id}/documents — список документов
+  GET /clients/{id}/relatives — список родственников
+
+Проблемы REST, решаемые GraphQL:
+  - Over-fetching: получение до 500 полей клиента, когда нужны только несколько
+  - Under-fetching: необходимость делать 3 отдельных запроса для получения полной информации
+  - Версионирование API: GraphQL не требует версионирования за счёт эволюции схемы
+"""
+
+# ============================================================================
+# ТИПЫ ДАННЫХ
+# ============================================================================
+
+"""
+Основная сущность — клиент сервиса страхования.
+Содержит до 500 атрибутов, поэтому критично использовать выбор полей на стороне клиента.
+"""
+type Client {
+  """Уникальный идентификатор клиента"""
+  id: ID!
+  
+  """ФИО клиента"""
+  name: String!
+  
+  """Возраст клиента"""
+  age: Int
+  
+  """Контактный телефон"""
+  phone: String
+  
+  """Email адрес"""
+  email: String
+  
+  """Дата рождения"""
+  birthDate: String
+  
+  """Паспортные данные (выборочно — не всегда нужны)"""
+  passport: PassportData
+  
+  """Адрес регистрации"""
+  address: Address
+  
+  """Список документов клиента (ленивая загрузка через DataLoader)"""
+  documents(
+    """Количество документов для возврата (пагинация)"""
+    first: Int = 10
+    
+    """Идентификатор последнего документа для продолжения пагинации"""
+    after: String
+  ): DocumentConnection!
+  
+  """Список родственников клиента (ленивая загрузка через DataLoader)"""
+  relatives(
+    """Количество родственников для возврата (пагинация)"""
+    first: Int = 10
+    
+    """Идентификатор последнего родственника для продолжения пагинации"""
+    after: String
+  ): RelativeConnection!
+  
+  """Дата создания записи о клиенте"""
+  createdAt: String
+  
+  """Дата последнего обновления"""
+  updatedAt: String
+}
+
+"""
+Паспортные данные клиента
+"""
+type PassportData {
+  """Серия паспорта"""
+  series: String
+  
+  """Номер паспорта"""
+  number: String
+  
+  """Код подразделения"""
+  departmentCode: String
+  
+  """Дата выдачи"""
+  issueDate: String
+  
+  """Кем выдан"""
+  issuedBy: String
+  
+  """Регион регистрации"""
+  region: String
+}
+
+"""
+Адрес регистрации клиента
+"""
+type Address {
+  """Индекс"""
+  postalCode: String
+  
+  """Город"""
+  city: String
+  
+  """Улица"""
+  street: String
+  
+  """Дом"""
+  house: String
+  
+  """Квартира"""
+  apartment: String
+}
+
+"""
+Документ клиента (паспорт, водительские права, СНИЛС и т.д.)
+"""
+type Document {
+  """Уникальный идентификатор документа"""
+  id: ID!
+  
+  """Тип документа (passport, driver_license, snils, inn и т.д.)"""
+  type: DocumentType!
+  
+  """Номер документа"""
+  number: String!
+  
+  """Дата выдачи"""
+  issueDate: String
+  
+  """Дата окончания действия"""
+  expiryDate: String
+  
+  """Статус документа (active, expired, revoked)"""
+  status: DocumentStatus!
+  
+  """Серия документа (для некоторых типов)"""
+  series: String
+}
+
+"""
+Возможные типы документов
+"""
+enum DocumentType {
+  PASSPORT
+  DRIVER_LICENSE
+  SNILS
+  INN
+  MILITARY_ID
+  BIRTH_CERTIFICATE
+  OTHER
+}
+
+"""
+Статус документа
+"""
+enum DocumentStatus {
+  ACTIVE
+  EXPIRED
+  REVOKED
+  PENDING_VERIFICATION
+}
+
+"""
+Родственник клиента
+"""
+type Relative {
+  """Уникальный идентификатор родственника"""
+  id: ID!
+  
+  """Тип родства (spouse, child, parent, sibling и т.д.)"""
+  relationType: RelationType!
+  
+  """ФИО родственника"""
+  name: String!
+  
+  """Возраст родственника"""
+  age: Int
+  
+  """Дата рождения"""
+  birthDate: String
+  
+  """Пол родственника"""
+  gender: Gender
+}
+
+"""
+Типы родства
+"""
+enum RelationType {
+  SPOUSE
+  CHILD
+  PARENT
+  SIBLING
+  OTHER_RELATIVE
+}
+
+"""
+Пол
+"""
+enum Gender {
+  MALE
+  FEMALE
+}
+
+# ============================================================================
+# СОЕДИНЕНИЯ (CONNECTIONS) ДЛЯ ПАГИНАЦИИ
+# ============================================================================
+
+"""
+Соединение для пагинации списка документов (Relay-подобный стиль)
+"""
+type DocumentConnection {
+  """Список элементов"""
+  edges: [DocumentEdge!]!
+  
+  """Информация о пагинации"""
+  pageInfo: PageInfo!
+  
+  """Общее количество элементов (если требуется)"""
+  totalCount: Int!
+}
+
+"""
+Ребро в соединении документов
+"""
+type DocumentEdge {
+  """Элемент"""
+  node: Document!
+  
+  """Курсор для пагинации"""
+  cursor: String!
+}
+
+"""
+Соединение для пагинации списка родственников
+"""
+type RelativeConnection {
+  """Список элементов"""
+  edges: [RelativeEdge!]!
+  
+  """Информация о пагинации"""
+  pageInfo: PageInfo!
+  
+  """Общее количество элементов (если требуется)"""
+  totalCount: Int!
+}
+
+"""
+Ребро в соединении родственников
+"""
+type RelativeEdge {
+  """Элемент"""
+  node: Relative!
+  
+  """Курсор для пагинации"""
+  cursor: String!
+}
+
+"""
+Информация о пагинации
+"""
+type PageInfo {
+  """Есть ли следующая страница"""
+  hasNextPage: Boolean!
+  
+  """Есть ли предыдущая страница"""
+  hasPreviousPage: Boolean!
+  
+  """Курсор начала диапазона"""
+  startCursor: String
+  
+  """Курсор конца диапазона"""
+  endCursor: String
+}
+
+# ============================================================================
+# QUERY — ОПЕРАЦИИ ЧТЕНИЯ
+# ============================================================================
+
+type Query {
+  """
+  Получить информацию о клиенте по ID.
+  
+  Этот запрос заменяет REST эндпоинт:
+    GET /clients/{id}
+  
+  Клиент может выбирать только нужные поля, избегая over-fetching.
+  
+  Пример:
+    query GetClient($id: ID!) {
+      client(id: $id) {
+        id
+        name
+        phone
+      }
+    }
+  """
+  client(id: ID!): Client
+  
+  """
+  Получить список документов клиента.
+  
+  Этот запрос заменяет REST эндпоинт:
+    GET /clients/{id}/documents
+  
+  Использует пагинацию для эффективной загрузки больших списков.
+  
+  Пример:
+    query GetClientDocuments($clientId: ID!, $first: Int) {
+      client(id: $clientId) {
+        id
+        documents(first: $first) {
+          edges {
+            node {
+              id
+              type
+              number
+              status
+            }
+            cursor
+          }
+          pageInfo {
+            hasNextPage
+          }
+          totalCount
+        }
+      }
+    }
+  """
+  clientDocuments(
+    """ID клиента"""
+    clientId: ID!
+    
+    """Количество документов для возврата"""
+    first: Int = 10
+    
+    """Курсор для пагинации"""
+    after: String
+  ): DocumentConnection!
+  
+  """
+  Получить список родственников клиента.
+  
+  Этот запрос заменяет REST эндпоинт:
+    GET /clients/{id}/relatives
+  
+  Использует пагинацию для эффективной загрузки больших списков.
+  
+  Пример:
+    query GetClientRelatives($clientId: ID!, $first: Int) {
+      client(id: $clientId) {
+        id
+        relatives(first: $first) {
+          edges {
+            node {
+              id
+              relationType
+              name
+              age
+            }
+            cursor
+          }
+          pageInfo {
+            hasNextPage
+          }
+          totalCount
+        }
+      }
+    }
+  """
+  clientRelatives(
+    """ID клиента"""
+    clientId: ID!
+    
+    """Количество родственников для возврата"""
+    first: Int = 10
+    
+    """Курсор для пагинации"""
+    after: String
+  ): RelativeConnection!
+  
+  """
+  Получить полную информацию о клиенте (клиент, документы, родственники)
+  в рамках одного запроса. Решает проблему under-fetching REST API.
+  
+  Пример:
+    query GetClientFull($id: ID!, $docsFirst: Int, $relativesFirst: Int) {
+      client(id: $id) {
+        id
+        name
+        phone
+        email
+        documents(first: $docsFirst) {
+          edges {
+            node {
+              id
+              type
+              number
+              status
+            }
+          }
+        }
+        relatives(first: $relativesFirst) {
+          edges {
+            node {
+              id
+              relationType
+              name
+            }
+          }
+        }
+      }
+    }
+  """
+  clientFull(
+    """ID клиента"""
+    id: ID!
+    
+    """Количество документов для возврата"""
+    documentsFirst: Int = 10
+    
+    """Количество родственников для возврата"""
+    relativesFirst: Int = 10
+  ): Client
+}
+
+# ============================================================================
+# MUTATION — ОПЕРАЦИИ ИЗМЕНЕНИЯ (опционально, для полноты схемы)
+# ============================================================================
+
+type Mutation {
+  """
+  Создать нового клиента.
+  
+  Пример:
+    mutation CreateClient($input: CreateClientInput!) {
+      createClient(input: $input) {
+        client {
+          id
+          name
+        }
+      }
+    }
+  """
+  createClient(input: CreateClientInput!): CreateClientPayload!
+  
+  """
+  Обновить данные клиента.
+  
+  Пример:
+    mutation UpdateClient($input: UpdateClientInput!) {
+      updateClient(input: $input) {
+        client {
+          id
+          name
+          phone
+        }
+      }
+    }
+  """
+  updateClient(input: UpdateClientInput!): UpdateClientPayload!
+  
+  """
+  Удалить клиента.
+  """
+  deleteClient(id: ID!): DeleteClientPayload!
+  
+  """
+  Добавить документ клиенту.
+  """
+  addDocument(input: AddDocumentInput!): AddDocumentPayload!
+  
+  """
+  Удалить документ клиента.
+  """
+  deleteDocument(id: ID!): DeleteDocumentPayload!
+  
+  """
+  Добавить родственника клиенту.
+  """
+  addRelative(input: AddRelativeInput!): AddRelativePayload!
+  
+  """
+  Удалить родственника клиента.
+  """
+  deleteRelative(id: ID!): DeleteRelativePayload!
+}
+
+# ============================================================================
+# INPUT ТИПЫ ДЛЯ MUTATION
+# ============================================================================
+
+input CreateClientInput {
+  name: String!
+  phone: String
+  email: String
+  birthDate: String
+  passport: PassportDataInput
+  address: AddressInput
+}
+
+input UpdateClientInput {
+  id: ID!
+  name: String
+  phone: String
+  email: String
+  birthDate: String
+  passport: PassportDataInput
+  address: AddressInput
+}
+
+input PassportDataInput {
+  series: String
+  number: String
+  departmentCode: String
+  issueDate: String
+  issuedBy: String
+  region: String
+}
+
+input AddressInput {
+  postalCode: String
+  city: String
+  street: String
+  house: String
+  apartment: String
+}
+
+input AddDocumentInput {
+  clientId: ID!
+  type: DocumentType!
+  number: String!
+  series: String
+  issueDate: String
+  expiryDate: String
+}
+
+input AddRelativeInput {
+  clientId: ID!
+  relationType: RelationType!
+  name: String!
+  age: Int
+  birthDate: String
+  gender: Gender
+}
+
+# ============================================================================
+# PAYLOAD ТИПЫ ДЛЯ MUTATION
+# ============================================================================
+
+type CreateClientPayload {
+  client: Client!
+}
+
+type UpdateClientPayload {
+  client: Client!
+}
+
+type DeleteClientPayload {
+  success: Boolean!
+  clientId: ID!
+}
+
+type AddDocumentPayload {
+  document: Document!
+}
+
+type DeleteDocumentPayload {
+  success: Boolean!
+  documentId: ID!
+}
+
+type AddRelativePayload {
+  relative: Relative!
+}
+
+type DeleteRelativePayload {
+  success: Boolean!
+  relativeId: ID!
+}
