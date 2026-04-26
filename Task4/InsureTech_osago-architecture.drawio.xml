@@ -1,0 +1,188 @@
+<mxfile host="app.diagrams.net" version="24.7.8">
+  <diagram name="OSAGO" id="osago">
+    <mxGraphModel grid="1" page="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" pageScale="1" pageWidth="1800" pageHeight="1200" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        
+        <!-- System Boundary -->
+        <mxCell id="boundary" value="InsureTech Prod" style="rounded=1;whiteSpace=wrap;html=1;dashed=1;fillColor=none;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="400" y="150" width="1200" height="900" as="geometry"/>
+        </mxCell>
+        
+        <!-- Клиент -->
+        <mxCell id="client" value="Клиент" style="shape=actor;whiteSpace=wrap;html=1;fillColor=#083F75;strokeColor=#06315C;fontColor=#ffffff;" vertex="1" parent="1">
+          <mxGeometry x="500" y="50" width="80" height="100" as="geometry"/>
+        </mxCell>
+        
+        <!-- Web - Yandex Cloud Container (используем нативную форму) -->
+        <mxCell id="web" value="InsureTech Web&lt;br&gt;[JavaScript, React]" style="shape=mxgraph.yandex-cloud.containers.container;html=1;fillColor=#23A2D9;strokeColor=#0E7DAD;fontColor=#ffffff;fontStyle=1;whiteSpace=wrap;verticalAlign=top;align=left;spacingLeft=40;" vertex="1" parent="1">
+          <mxGeometry x="450" y="200" width="180" height="120" as="geometry"/>
+        </mxCell>
+        
+        <!-- core-app - Yandex Cloud Container -->
+        <mxCell id="core-app" value="core-app&lt;br&gt;[Kotlin, SpringBoot]" style="shape=mxgraph.yandex-cloud.containers.container;html=1;fillColor=#23A2D9;strokeColor=#0E7DAD;fontColor=#ffffff;fontStyle=1;whiteSpace=wrap;verticalAlign=top;align=left;spacingLeft=40;" vertex="1" parent="1">
+          <mxGeometry x="450" y="400" width="180" height="100" as="geometry"/>
+        </mxCell>
+        
+        <!-- core-db - Yandex Managed Service for PostgreSQL -->
+        <mxCell id="core-db" value="core-db&lt;br&gt;[PostgreSQL]" style="shape=mxgraph.yandex-cloud.services.database_postgresql;html=1;fillColor=#23A2D9;strokeColor=#0E7DAD;fontColor=#ffffff;fontStyle=1;whiteSpace=wrap;verticalAlign=top;align=left;spacingLeft=40;" vertex="1" parent="1">
+          <mxGeometry x="450" y="600" width="180" height="100" as="geometry"/>
+        </mxCell>
+        
+        <!-- osago-aggregator (НОВЫЙ) - Yandex Cloud Container (оранжевый) -->
+        <mxCell id="osago-agg" value="osago-aggregator&lt;br&gt;[Kotlin, SpringBoot]" style="shape=mxgraph.yandex-cloud.containers.container;html=1;fillColor=#FF6B35;strokeColor=#CC4D1A;fontColor=#ffffff;fontStyle=1;whiteSpace=wrap;verticalAlign=top;align=left;spacingLeft=40;" vertex="1" parent="1">
+          <mxGeometry x="450" y="800" width="180" height="100" as="geometry"/>
+        </mxCell>
+        
+        <!-- osago-aggregator-db (НОВЫЙ) - Yandex Managed Service for PostgreSQL (оранжевый) -->
+        <mxCell id="osago-db" value="osago-aggregator-db&lt;br&gt;[PostgreSQL]" style="shape=mxgraph.yandex-cloud.services.database_postgresql;html=1;fillColor=#FF6B35;strokeColor=#CC4D1A;fontColor=#ffffff;fontStyle=1;whiteSpace=wrap;verticalAlign=top;align=left;spacingLeft=40;" vertex="1" parent="1">
+          <mxGeometry x="700" y="800" width="180" height="100" as="geometry"/>
+        </mxCell>
+        
+        <!-- client-info - Yandex Cloud Container -->
+        <mxCell id="client-info" value="client-info&lt;br&gt;[Kotlin, SpringBoot]" style="shape=mxgraph.yandex-cloud.containers.container;html=1;fillColor=#23A2D9;strokeColor=#0E7DAD;fontColor=#ffffff;fontStyle=1;whiteSpace=wrap;verticalAlign=top;align=left;spacingLeft=40;" vertex="1" parent="1">
+          <mxGeometry x="700" y="200" width="180" height="100" as="geometry"/>
+        </mxCell>
+        
+        <!-- client-db - Yandex Managed Service for PostgreSQL -->
+        <mxCell id="client-db" value="client-db&lt;br&gt;[PostgreSQL]" style="shape=mxgraph.yandex-cloud.services.database_postgresql;html=1;fillColor=#23A2D9;strokeColor=#0E7DAD;fontColor=#ffffff;fontStyle=1;whiteSpace=wrap;verticalAlign=top;align=left;spacingLeft=40;" vertex="1" parent="1">
+          <mxGeometry x="950" y="200" width="180" height="100" as="geometry"/>
+        </mxCell>
+        
+        <!-- ins-product-aggregator - Yandex Cloud Container -->
+        <mxCell id="prod-agg" value="ins-product-aggregator&lt;br&gt;[Kotlin, SpringBoot]" style="shape=mxgraph.yandex-cloud.containers.container;html=1;fillColor=#23A2D9;strokeColor=#0E7DAD;fontColor=#ffffff;fontStyle=1;whiteSpace=wrap;verticalAlign=top;align=left;spacingLeft=40;" vertex="1" parent="1">
+          <mxGeometry x="950" y="400" width="180" height="100" as="geometry"/>
+        </mxCell>
+        
+        <!-- ins-comp-settlement - Yandex Cloud Container -->
+        <mxCell id="settlement" value="ins-comp-settlement&lt;br&gt;[Kotlin, SpringBoot]" style="shape=mxgraph.yandex-cloud.containers.container;html=1;fillColor=#23A2D9;strokeColor=#0E7DAD;fontColor=#ffffff;fontStyle=1;whiteSpace=wrap;verticalAlign=top;align=left;spacingLeft=40;" vertex="1" parent="1">
+          <mxGeometry x="950" y="600" width="180" height="100" as="geometry"/>
+        </mxCell>
+        
+        <!-- settlement-db - Yandex Managed Service for PostgreSQL -->
+        <mxCell id="settlement-db" value="settlement-db&lt;br&gt;[PostgreSQL]" style="shape=mxgraph.yandex-cloud.services.database_postgresql;html=1;fillColor=#23A2D9;strokeColor=#0E7DAD;fontColor=#ffffff;fontStyle=1;whiteSpace=wrap;verticalAlign=top;align=left;spacingLeft=40;" vertex="1" parent="1">
+          <mxGeometry x="950" y="800" width="180" height="100" as="geometry"/>
+        </mxCell>
+        
+        <!-- Внешние системы - Yandex External Network -->
+        <mxCell id="payment" value="Платёжный сервис&lt;br&gt;[External API]" style="shape=mxgraph.yandex-cloud.services.network_external;html=1;fillColor=#8C8496;strokeColor=#736782;fontColor=#ffffff;fontStyle=0;whiteSpace=wrap;verticalAlign=top;align=left;spacingLeft=40;" vertex="1" parent="1">
+          <mxGeometry x="50" y="300" width="180" height="100" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="partners" value="Системы партнёров&lt;br&gt;[External API]" style="shape=mxgraph.yandex-cloud.services.network_external;html=1;fillColor=#8C8496;strokeColor=#736782;fontColor=#ffffff;fontStyle=0;whiteSpace=wrap;verticalAlign=top;align=left;spacingLeft=40;" vertex="1" parent="1">
+          <mxGeometry x="50" y="500" width="180" height="100" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="ins-companies" value="Системы страховых компаний&lt;br&gt;[External REST API]" style="shape=mxgraph.yandex-cloud.services.network_external;html=1;fillColor=#8C8496;strokeColor=#736782;fontColor=#ffffff;fontStyle=0;whiteSpace=wrap;verticalAlign=top;align=left;spacingLeft=40;" vertex="1" parent="1">
+          <mxGeometry x="1500" y="600" width="180" height="100" as="geometry"/>
+        </mxCell>
+        
+        <!-- Связи -->
+        <mxCell id="rel1" value="HTTPS" style="endArrow=blockThin;html=1;strokeColor=#828282;" edge="1" parent="1" source="client" target="web">
+          <mxGeometry width="100" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="rel2" value="REST" style="endArrow=blockThin;html=1;strokeColor=#828282;" edge="1" parent="1" source="web" target="core-app">
+          <mxGeometry width="100" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="rel3" value="TCP" style="endArrow=blockThin;html=1;strokeColor=#828282;" edge="1" parent="1" source="core-app" target="core-db">
+          <mxGeometry width="100" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="rel4" value="REST" style="endArrow=blockThin;html=1;strokeColor=#828282;" edge="1" parent="1" source="core-app" target="prod-agg">
+          <mxGeometry width="100" as="geometry">
+            <Array as="points"><mxPoint x="850" y="450"/></Array>
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="rel5" value="REST" style="endArrow=blockThin;html=1;strokeColor=#828282;" edge="1" parent="1" source="core-app" target="client-info">
+          <mxGeometry width="100" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="rel6" value="TCP" style="endArrow=blockThin;html=1;strokeColor=#828282;" edge="1" parent="1" source="client-info" target="client-db">
+          <mxGeometry width="100" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="rel7" value="HTTP" style="endArrow=blockThin;html=1;strokeColor=#828282;" edge="1" parent="1" source="core-app" target="payment">
+          <mxGeometry width="100" as="geometry">
+            <Array as="points"><mxPoint x="230" y="450"/><mxPoint x="230" y="350"/></Array>
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="rel8" value="REST" style="endArrow=blockThin;html=1;strokeColor=#828282;" edge="1" parent="1" source="partners" target="core-app">
+          <mxGeometry width="100" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="rel9" value="HTTP" style="endArrow=blockThin;html=1;strokeColor=#828282;" edge="1" parent="1" source="prod-agg" target="ins-companies">
+          <mxGeometry width="100" as="geometry">
+            <Array as="points"><mxPoint x="1350" y="450"/><mxPoint x="1350" y="650"/></Array>
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="rel10" value="HTTP" style="endArrow=blockThin;html=1;strokeColor=#828282;" edge="1" parent="1" source="settlement" target="ins-companies">
+          <mxGeometry width="100" as="geometry">
+            <Array as="points"><mxPoint x="1350" y="650"/></Array>
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="rel11" value="TCP" style="endArrow=blockThin;html=1;strokeColor=#828282;" edge="1" parent="1" source="settlement" target="settlement-db">
+          <mxGeometry width="100" as="geometry"/>
+        </mxCell>
+        
+        <!-- НОВЫЕ связи для ОСАГО -->
+        <mxCell id="rel12" value="REST (Async)&lt;br&gt;Circuit Breaker, Retry, Timeout, Rate Limiter" style="endArrow=blockThin;html=1;strokeColor=#FF6B35;fontColor=#FF6B35;fontStyle=1" edge="1" parent="1" source="core-app" target="osago-agg">
+          <mxGeometry width="100" as="geometry">
+            <Array as="points"><mxPoint x="540" y="600"/><mxPoint x="540" y="800"/></Array>
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="rel13" value="Callback (REST)" style="endArrow=blockThin;html=1;strokeColor=#FF6B35;dashed=1;fontColor=#FF6B35;" edge="1" parent="1" source="osago-agg" target="core-app">
+          <mxGeometry width="100" as="geometry">
+            <Array as="points"><mxPoint x="420" y="850"/><mxPoint x="420" y="550"/></Array>
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="rel14" value="TCP" style="endArrow=blockThin;html=1;strokeColor=#FF6B35;fontColor=#FF6B35;" edge="1" parent="1" source="osago-agg" target="osago-db">
+          <mxGeometry width="100" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="rel15" value="HTTP&lt;br&gt;CB, Retry, Timeout, Rate Limiter, Bulkhead" style="endArrow=blockThin;html=1;strokeColor=#FF6B35;fontColor=#FF6B35;fontStyle=1" edge="1" parent="1" source="osago-agg" target="ins-companies">
+          <mxGeometry width="100" as="geometry">
+            <Array as="points"><mxPoint x="1350" y="850"/><mxPoint x="1350" y="700"/></Array>
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- SSE связь для веб-приложения -->
+        <mxCell id="rel16" value="SSE" style="endArrow=blockThin;html=1;strokeColor=#23A2D9;dashed=1;fontColor=#23A2D9;" edge="1" parent="1" source="core-app" target="web">
+          <mxGeometry width="100" as="geometry">
+            <Array as="points"><mxPoint x="540" y="400"/><mxPoint x="540" y="320"/></Array>
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- Паттерны (иконки) -->
+        <mxCell id="pat1" value="Rate Limiter" style="ellipse;whiteSpace=wrap;html=1;fillColor=#2875E2;strokeColor=#ffffff;fontSize=8;" vertex="1" parent="1">
+          <mxGeometry x="560" y="650" width="20" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="pat2" value="Circuit Breaker" style="ellipse;whiteSpace=wrap;html=1;fillColor=#2875E2;strokeColor=#ffffff;fontSize=8;" vertex="1" parent="1">
+          <mxGeometry x="560" y="680" width="20" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="pat3" value="Retry" style="ellipse;whiteSpace=wrap;html=1;fillColor=#2875E2;strokeColor=#ffffff;fontSize=8;" vertex="1" parent="1">
+          <mxGeometry x="560" y="710" width="20" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="pat4" value="Timeout" style="ellipse;whiteSpace=wrap;html=1;fillColor=#2875E2;strokeColor=#ffffff;fontSize=8;" vertex="1" parent="1">
+          <mxGeometry x="560" y="740" width="20" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="pat5" value="Bulkhead" style="ellipse;whiteSpace=wrap;html=1;fillColor=#2875E2;strokeColor=#ffffff;fontSize=8;" vertex="1" parent="1">
+          <mxGeometry x="560" y="770" width="20" height="20" as="geometry"/>
+        </mxCell>
+        
+        <!-- Легенда -->
+        <mxCell id="legend" value="&lt;b&gt;Легенда:&lt;/b&gt;&lt;br&gt;&lt;br&gt;&lt;font color=&quot;#FF6B35&quot;&gt;Оранжевый — новые компоненты ОСАГО&lt;/font&gt;&lt;br&gt;&lt;font color=&quot;#23A2D9&quot;&gt;Синий — существующие компоненты&lt;/font&gt;&lt;br&gt;&lt;br&gt;&lt;b&gt;Иконки Yandex Cloud:&lt;/b&gt;&lt;br&gt;• Container — сервисы&lt;br&gt;• PostgreSQL — базы данных&lt;br&gt;• External — внешние системы&lt;br&gt;&lt;br&gt;&lt;b&gt;Паттерны (синие):&lt;/b&gt;&lt;br&gt;• Rate Limiter&lt;br&gt;• Circuit Breaker&lt;br&gt;• Retry&lt;br&gt;• Timeout&lt;br&gt;• Bulkhead" style="text;html=1;strokeColor=#CCCCCC;fillColor=#F5F5F5;align=left;verticalAlign=top;whiteSpace=wrap;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="50" y="150" width="280" height="200" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
